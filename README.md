@@ -13,5 +13,10 @@ Go 编程语言学习。
 
 
 
+### 信息
 
+**WeChat**
 
+账号：`wu_xiaoshen`
+
+![wechat](Image/wechat.jpg)

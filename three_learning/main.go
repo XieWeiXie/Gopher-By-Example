@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 // declare
 
@@ -20,6 +23,7 @@ func exampleListArg(args ...int) {
 	for index, value := range args {
 		fmt.Println(index, value)
 	}
+
 }
 
 // one response
@@ -76,9 +80,9 @@ func main() {
 	example()
 	exampleOneArg(12)
 	exampleListArg(1, 2, 3, 4, 5)
-	exampleOneResponse(10)
-	exampleTwoResponses(10)
-	exampleNameResponse(10)
+	fmt.Println(exampleOneResponse(10))
+	fmt.Println(exampleTwoResponses(10))
+	fmt.Println(exampleNameResponse(10))
 
 	var arg int = 10
 	exampleValueCopy(arg)
@@ -88,4 +92,13 @@ func main() {
 
 	fmt.Println(exampleFuncAsArg(10, funcArg))
 	fmt.Println(NoNameFunc(10))
+	errors.New()
+}
+
+func init() {
+	fmt.Println("hello XieWei Two")
+}
+
+func init() {
+	fmt.Println("hello XieWei")
 }

@@ -1,15 +1,13 @@
 package gocn
 
 import (
-	"fmt"
-
 	"errors"
 
-	"go-example-for-live/night_learning/infra"
+	"go-example-for-live/nine_learning/infra"
 
-	"go-example-for-live/night_learning/download"
+	"go-example-for-live/nine_learning/download"
 
-	"go-example-for-live/night_learning/engine"
+	"go-example-for-live/nine_learning/domain"
 
 	"github.com/PuerkitoBio/goquery"
 )
@@ -18,11 +16,11 @@ var (
 	ErrorParse = errors.New("parse error")
 )
 
-func TitleParse(document *goquery.Document) engine.Contents {
+func TitleParse(document *goquery.Document) domain.Contents {
 
 	var (
-		AllContents engine.Contents
-		OneContent  engine.Content
+		AllContents domain.Contents
+		OneContent  domain.Content
 	)
 
 	document.Find("div.aw-common-list div.aw-item").Each(func(i int, selection *goquery.Selection) {
@@ -49,7 +47,7 @@ func TitleParse(document *goquery.Document) engine.Contents {
 		one, two, three = infra.StringSplitByDot(selection.Find("p span").Eq(0).Text())
 		//fmt.Println(user, userHome, url, title, tag, lastAnswer, one, two, three, passageContent)
 
-		OneContent = engine.Content{
+		OneContent = domain.Content{
 			URL:          url,
 			Title:        title,
 			Tag:          tag,
@@ -61,7 +59,7 @@ func TitleParse(document *goquery.Document) engine.Contents {
 			See:          three,
 			Passage:      passageContent,
 		}
-		fmt.Println(OneContent)
+		//fmt.Println(OneContent)
 		AllContents = append(AllContents, OneContent)
 
 	})

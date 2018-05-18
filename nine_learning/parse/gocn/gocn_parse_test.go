@@ -3,7 +3,7 @@ package gocn
 import (
 	"testing"
 
-	"go-example-for-live/night_learning/download"
+	"go-example-for-live/nine_learning/download"
 
 	"github.com/PuerkitoBio/goquery"
 )

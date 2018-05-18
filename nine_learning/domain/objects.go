@@ -1,4 +1,4 @@
-package engine
+package domain
 
 import "github.com/PuerkitoBio/goquery"
 

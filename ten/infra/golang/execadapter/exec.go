@@ -27,8 +27,12 @@ func Execute(dir string, cmd string, args ...string) error {
 	}
 
 	var executeCmd *exec.Cmd
-	executeCmd = exec.Command(cmd, args...)
-	executeCmd.Dir = dir
+	executeCmd = exec.Command(ok, args...)
+	
+	if dir!=""{
+	        executeCmd.Dir = dir
+	}
+	
 
 	var outString []byte
 

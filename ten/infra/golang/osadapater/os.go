@@ -18,12 +18,11 @@ var (
 func MKdir(name string) error {
 
 	var (
-		ok  bool
 		err error
 	)
 
-	ok, err = FExist(name)
-	if err != nil || ok == false {
+	_, err = FExist(name)
+	if err != nil {
 		return os.Mkdir(name, 0650)
 	} else {
 		return ErrDirExist

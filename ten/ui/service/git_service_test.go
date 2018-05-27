@@ -21,7 +21,7 @@ func TestGitClone(t *testing.T) {
 		{
 			dir:  "./xiewei",
 			addr: "github.com",
-			path: "Resume.git",
+			path: "git@github.com:wuxiaoxiaoshen/" + "Resume.git",
 		},
 	}
 	osadapater.RDir("xiewei")

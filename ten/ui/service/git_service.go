@@ -21,7 +21,7 @@ func GitClone(dir string, addr string, path string) (bool, error) {
 		fullPath = path
 	}
 	if addr == "github.com" {
-		fullPath = "git@github.com:wuxiaoxiaoshen/" + path
+		fullPath = path
 	}
 
 	var err error

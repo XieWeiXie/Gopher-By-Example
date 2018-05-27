@@ -1,0 +1,10 @@
+func main() {
+    var b StructB
+
+    err := yaml.Unmarshal([]byte(data), &b)
+    if err != nil {
+        log.Fatalf("cannot unmarshal data: %v", err)
+    }
+    fmt.Println(b.A)
+    fmt.Println(b.B)
+}

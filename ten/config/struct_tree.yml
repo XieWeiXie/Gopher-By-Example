@@ -1,0 +1,10 @@
+---
+parameters:
+   example:
+      json: user-cfg.json
+      yaml: user-cfg.yaml
+      object: user-cfg.object
+      object.array: user-cfg.object.newarray
+      paragraph: user-cfg.paragraph
+      content: user-cfg.content
+

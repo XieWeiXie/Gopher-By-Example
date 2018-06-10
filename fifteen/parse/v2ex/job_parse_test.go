@@ -3,7 +3,7 @@ package v2ex
 import (
 	"testing"
 
-	"go-example-for-live/nine/download"
+	"go-example-for-live/fifteen/download"
 
 	"fmt"
 
@@ -11,7 +11,7 @@ import (
 )
 
 func TestV2exParse(test *testing.T) {
-	docV2ex, _ := download.Download("https://www.v2ex.com/?tab=jobs")
+	docV2ex, _ := download.GetHtmlResponse("https://www.v2ex.com/?tab=jobs")
 
 	tt := []struct {
 		doc *goquery.Document

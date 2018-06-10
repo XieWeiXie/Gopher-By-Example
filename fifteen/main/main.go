@@ -1,4 +1,4 @@
-package main
+package main // import "github.com/go-example-for-live/fifteen/main"
 
 import (
 	"go-example-for-live/fifteen/engine"

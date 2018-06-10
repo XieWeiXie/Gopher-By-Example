@@ -1,7 +1,7 @@
 package jianshu
 
 import (
-	"go-example-for-live/nine/download"
+	"go-example-for-live/fifteen/download"
 	"testing"
 
 	"fmt"
@@ -11,7 +11,7 @@ import (
 
 func TestInfoParse(test *testing.T) {
 
-	docJianshu, _ := download.Download("https://www.jianshu.com/u/58f0817209aa")
+	docJianshu, _ := download.GetHtmlResponse("https://www.jianshu.com/u/58f0817209aa")
 
 	tt := []struct {
 		doc *goquery.Document

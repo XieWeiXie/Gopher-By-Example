@@ -1,7 +1,7 @@
 package engine
 
 import (
-	"go-example-for-live/nine/download"
+	"go-example-for-live/fifteen/download"
 
 	"errors"
 	"fmt"
@@ -30,7 +30,7 @@ func Run(seeds ...Request) {
 		r := requests[0]
 		requests = requests[1:]
 
-		body, err := download.Download(r.Url)
+		body, err := download.GetHtmlResponse(r.Url)
 		if err != nil {
 			fmt.Println(ErrDownload)
 			continue

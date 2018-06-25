@@ -3,6 +3,14 @@
 Go 编程语言学习。
 
 
+- 简书： [Go 上手指南](https://www.jianshu.com/nb/25756155)
+- 知乎专栏: [Gopher](https://zhuanlan.zhihu.com/c_185086376)
+- 网易云课堂视频版：[Gopher 上手指南]()
+- Bilibili 视频版: [Gopher 上手指南]()
+
+
+---
+
 
 ### 第一季
 

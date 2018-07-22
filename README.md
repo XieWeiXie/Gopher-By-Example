@@ -33,6 +33,7 @@ Go 编程语言学习。
 15. [工程管理](MarkDown/01-14.md)
 16. [Fake-useragent-go-ng](MarkDown/01-15.md)
 17. [如何快速熟悉一个项目](MarkDown/01-16.md)
+18. [gin-swagger 构建自动化文档](MarkDown/01-17.md)
 
 ---
 

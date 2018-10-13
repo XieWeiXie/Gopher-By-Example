@@ -5,8 +5,8 @@ Go 编程语言学习。
 
 - 简书： [Go 上手指南](https://www.jianshu.com/nb/25756155)
 - 知乎专栏: [Gopher](https://zhuanlan.zhihu.com/c_185086376)
-- 网易云课堂视频版：[Gopher 上手指南]()
-- Bilibili 视频版: [Gopher 上手指南]()
+- 网易云课堂视频版：[Gopher 上手指南](https://study.163.com/course/courseMain.htm?courseId=1005270033&share=2&shareId=1026591096)
+- Bilibili 视频版: [Gopher 上手指南](https://space.bilibili.com/10056291/#/)
 
 
 ---

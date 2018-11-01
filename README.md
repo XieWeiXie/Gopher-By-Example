@@ -44,8 +44,11 @@ Go 编程语言学习。
 
 **内置库**
 
-1. [os ](MarkDown/02-01.md)
+> 主要是分析内置库的常用用法
 
+
+
+1. [strings 常用用法](https://zhuanlan.zhihu.com/p/48171845) | [示例](built-in-package/season-one/season-strings/main.go)
 
 
 ### 第三季

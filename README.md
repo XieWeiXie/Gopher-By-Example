@@ -63,4 +63,6 @@ Go 编程语言学习。
 
 账号：`wu_xiaoshen`
 
-![wechat](Image/wechat.jpg)
+<img src="Image/wechat.jpg" width = "150" height = "150" alt="微信" align=center />
+
+

@@ -42,6 +42,8 @@ func main() {
 
 	fmt.Println(UnMarshalExample([]byte(`{"name":"xieWei", "age": "20", "city_shanghai": "GuangDong"}`)))
 
+	fmt.Println(json.Valid([]byte(`{"name":1, 2}`)))
+
 	var self = SelfMarshal{}
 	self.Age = 20
 	self.Name = "XieWei"

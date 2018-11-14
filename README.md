@@ -52,6 +52,7 @@ Go 编程语言学习。
 2. [strconv 常用用法](https://zhuanlan.zhihu.com/p/48267436) | [示例](built-in-package/season-one/season-strconv/main.go)
 3. [reflect 常用用法](https://zhuanlan.zhihu.com/p/48535925) | [示例](built-in-package/season-one/season-reflect/main.go)
 3. [json 常用用法](https://zhuanlan.zhihu.com/p/48753969) | [示例](built-in-package/season-one/season-json/main.go)
+4. [time 常用用法](https://zhuanlan.zhihu.com/p/49638425) | [示例](built-in-package/season-one/season-time/main.go)
 
 ---
 

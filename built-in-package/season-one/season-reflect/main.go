@@ -7,9 +7,9 @@ import (
 )
 
 type Info struct {
-	Name   string      `json:"name"`
-	Age    interface{} `json:"age"`
-	Prince float32     `json:"prince"`
+	Name  string      `json:"name"`
+	Age   interface{} `json:"age"`
+	Price float32     `json:"price"`
 }
 
 type Groups struct {
@@ -35,9 +35,9 @@ func init() {
 		GroupIDs:  []int{100, 200, 300, 400},
 		GroupName: []string{"what", "how", "when", "why"},
 		Info: Info{
-			Name:   "XieXiaoLu",
-			Age:    20,
-			Prince: 1.2345,
+			Name:  "XieXiaoLu",
+			Age:   20,
+			Price: 1.2345,
 		},
 	}
 

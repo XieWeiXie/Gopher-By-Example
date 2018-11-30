@@ -1,0 +1,516 @@
+Seven ways to profile a Go program
+GoBridge remote meetup
+22 Sep 2016
+
+Dave Cheney
+Himself
+dave@cheney.net
+http://dave.cheney.net/
+@davecheney
+
+* Hello, again.
+
+Notwithstanding my remarks yesterday, a reason people choose Go is because it lets them write efficient programs.
+
+But it's not just the compiler, the tooling around the language is what gives us our edge.
+
+Agenda: Seven different ways to profile Go programs.
+
+_Note:_ Not all of them are available on every platform.
+
+There's a lot of information in these slides, please keep your hands inside the vehicle at all times.
+
+* №1 time 
+
+* time
+
+The first method of profiling any program is `time`.
+
+`time` is a shell builtin. The format is specified by POSIX.2 (IEEE Std 1003.2-1992).
+
+    % time go fmt std
+
+    real    0m5.812s
+    user    0m4.254s
+    sys     0m1.130s
+
+GNU come with a `time(1)` command that is signficantly more powerful than the shell builtin.
+
+	% /usr/bin/time go fmt std
+	8.07user 1.02system 0:09.25elapsed 98%CPU (0avgtext+0avgdata 221940maxresident)k
+	172296inputs+58448outputs (180major+226861minor)pagefaults 0swaps
+
+BSD also has a `/usr/bin/time`, which is almost as good.
+	    
+	% /usr/bin/time go fmt std                                                                                                
+	4.64 real         3.72 user         0.93 sys
+
+* /usr/bin/time -v (GNU)
+
+GNU's `/usr/bin/time` suports many flags, the most impressive is `-v`.
+
+    % /usr/bin/time -v go fmt std
+        Command being timed: "go fmt std"
+        User time (seconds): 7.44
+        System time (seconds): 0.80
+        Percent of CPU this job got: 104%
+        Elapsed (wall clock) time (h:mm:ss or m:ss): 0:07.88
+        Maximum resident set size (kbytes): 252864
+        Average resident set size (kbytes): 0
+        Major (requiring I/O) page faults: 24
+        Minor (reclaiming a frame) page faults: 233455
+        Voluntary context switches: 23564
+        Involuntary context switches: 2146
+        Swaps: 0
+        File system inputs: 16880
+        File system outputs: 0
+        Socket messages sent: 0
+        Socket messages received: 0
+        Signals delivered: 0
+        Exit status: 0
+
+* /usr/bin/time -v (BSD)
+
+BSD's `/usr/bin/time` also supports `-v`, but it's less impressive.
+
+    % /usr/bin/time -l go fmt std
+            4.66 real         3.73 user         0.90 sys
+       9687040  maximum resident set size
+             0  average shared memory size
+             0  average unshared data size
+             0  average unshared stack size
+        171362  page reclaims
+             4  page faults
+             0  swaps
+             0  block input operations
+             2  block output operations
+             0  messages sent
+             0  messages received
+           159  signals received
+         17182  voluntary context switches
+          7205  involuntary context switches
+
+* Did you know?
+
+The go tool has the ability to add a prefix to every command it runs.
+
+	% go build -toolexec=... github.com/pkg/profile
+	% go test -toolexec=... net/http
+
+`-toolexec` applies to _every_ command executed by the `go` tool.
+
+We use this for: 
+
+- `toolstash`, a tool rsc wrote to check the compiler output is byte for byte identical.
+- `android/arm` and `ios/arm` builds that are built on one machine, and run on another.
+
+Further reading:
+
+- go help build
+
+* Why is my build so slow?
+
+Most of you know about `go`build`-x` that shows each command the go tool invokes.
+
+	% go build -x fmt
+	WORK=/var/folders/lv/028ssy8n19v56_k2q43kkb5r0000gn/T/go-build339335935
+	mkdir -p $WORK/fmt/_obj/
+	mkdir -p $WORK/
+	cd /Users/dfc/go/src/fmt
+	/Users/dfc/go/pkg/tool/darwin_amd64/compile -o $WORK/fmt.a -trimpath $WORK -p fmt -complete -buildid dca2fe01d452d533dcd59bec0c14671498d1e88a -D _/Users/dfc/go/src/fmt -I $WORK -pack ./doc.go ./format.go ./print.go ./scan.go
+
+`-x` output can be copied and pasted into the shell to run commands manually. Buuuut, it's kind of laborious.
+
+Idea: combine `-toolexec` and `/usr/bin/time` to profile the entire build.
+
+DEMO:
+	`go`build`-toolexec="/usr/bin/time"`cmd/compile/internal/gc`
+
+* №2 GODEBUG
+
+* GODEBUG
+
+If `/usr/bin/time` is external, let's turn to something built into every Go program.
+
+The Go runtime collects various statistics during the life of your program.
+
+These stats are always collected, but normally supressed, you can enable their display by setting the `GODEBUG` environment variable.
+
+As a garbage collected language, the performance of Go programs is often determined by their interaction with the garbage collector.
+
+A simple way to obtain a general idea of how hard the garbage collector is working is to enable the output of GC logging.
+
+DEMO: 
+
+	env GODEBUG=gctrace=1 godoc -http=:8080
+
+* Intermission №1
+
+* How does a profiler work?
+
+A profiler runs your program and configures the operating system to interrupt it at regular intervals.
+
+This is done by sending `SIGPROF` to the program being profiled, which suspends and transfers execution to the profiler.
+
+The profiler then grabs the program counter for each executing _thread_ and restarts the program.
+
+Question: Why is the profile per _thread_, not per _goroutine_?
+
+* Profiling do's and don't's
+
+Before you profile, you must have a stable environment to get repeatable results.
+
+- The machine must be idle—don't profile on shared hardware, don't browse the web while waiting for a long benchmark to run.
+- Watch out for power saving and thermal scaling.
+- Avoid virtual machines and shared cloud hosting; they are too noisy for consistent measurements.
+- There is a kernel bug on OS X versions less than El Capitan; upgrade or avoid profiling on OS X.
+
+If you can afford it, buy dedicated performance test hardware. Rack them, disable all the power management and thermal scaling and never update the software on those machines.
+
+For everyone else, have a before and after sample and run them multiple times to get consistent results.
+
+* №3 pprof
+
+* pprof
+
+`pprof` descends from the Google Performance Tools suite.
+
+`pprof` profiling is built into the Go runtime.
+
+It comes in two parts:
+
+- `runtime/pprof` package built into every Go program
+- `go`tool`pprof` for investigating profiles.
+
+* CPU profiling
+
+CPU profiling is the most common type of profile.
+
+When CPU profiling is enabled, the runtime will interrupt itself every 10ms and record the stack trace of the currently running goroutines.
+
+Once the profile is saved to disk, we can analyse it to determine the hottest code paths.
+
+The more times a function appears in the profile, the more time that code path is taking as a percentage of the total runtime.
+
+* Memory profiling
+
+Memory profiling records the stack trace when a _heap_ allocation is made.
+
+Memory profiling, like CPU profiling is sample based. By default memory profiling samples 1 in every 1000 allocations. This rate can be changed.
+
+Stack allocations are assumed to be free and are _not_tracked_ in the memory profile.
+
+Because of memory profiling is sample based and because it tracks _allocations_ not _use_, using memory profiling to determine your application's overall memory usage is difficult.
+
+* Block profiling
+
+Block profiling is quite unique.
+
+A block profile is similar to a CPU profile, but it records the amount of time a goroutine spent waiting for a shared resource.
+
+This can be useful for determining _concurrency_ bottlenecks in your application.
+
+Block profiling can show you when a large number of goroutines _could_ make progress, but were _blocked_. Blocking includes:
+
+- Sending or receiving on a unbuffered channel.
+- Sending to a full channel, receiving from an empty one.
+- Trying to `Lock` a `sync.Mutex` that is locked by another goroutine.
+
+Block profiling is a very specialised tool, it should not be used until you believe you have eliminated all your CPU and memory usage bottlenecks.
+
+* One profile at at time
+
+Profiling is not free.
+
+Profiling has a moderate, but measurable impact on program performance—especially if you increase the memory profile sample rate.
+
+Most tools will not stop you from enabling multiple profiles at once.
+
+If you enable multiple profiles at the same time, they will observe their own interactions and skew your results.
+
+*Do*not*enable*more*than*one*kind*of*profile*at*a*time.*
+
+* Microbenchmarks
+
+The easiest way to profile a _function_ is with the `testing` package.
+
+The testing package has built in support for generating CPU, memory, and block profiles.
+
+`-cpuprofile=$FILE` writes a CPU profile to `$FILE`.
+`-memprofile=$FILE`, writes a memory profile to `$FILE`, `-memprofilerate=N` adjusts the profile rate to 1/N.
+`-blockprofile=$FILE` writes a block profile to `$FILE`.
+
+Using any of these flags also preserves the binary.
+
+	% go test -run=XXX -bench=IndexByte -cpuprofile=/tmp/c.p bytes
+	% go tool pprof bytes.test /tmp/c.p
+
+Note: use `-run=XXX` to disable tests, you only want to profile benchmarks.
+
+* Profiling whole programs
+
+`testing` benchmarks is useful for microbenchmarks, but what if you want to profile a complete application?
+
+To profile an application, you could use the runtime/pprof package, but that is fiddly and low level.
+
+A few years ago I wrote a small package, [[https://github.com/pkg/profile][github.com/pkg/profile]], to make it easier to profile an application.
+
+	import "github.com/pkg/profile"
+
+	func main() {
+	        defer profile.Start().Stop()
+	        ...
+	}
+
+DEMO: Show profiling cmd/godoc with pkg/profile
+
+* №4 /debug/pprof
+
+* /debug/pprof
+
+If your program runs a webserver you can enable debugging over http.
+
+
+Then use the pprof tool to look at a 30-second CPU profile:
+
+	go tool pprof http://localhost:3999/debug/pprof/profile
+
+Or to look at the heap profile:
+
+	go tool pprof http://localhost:3999/debug/pprof/heap
+
+Or to look at the goroutine blocking profile:
+
+	go tool pprof http://localhost:3999/debug/pprof/block
+
+
+* Using pprof
+
+Now that I've talked about what pprof can measure, I will talk about how to use pprof to analyse a profile.
+
+pprof should always be invoked with _two_ arguments.
+
+    go tool pprof /path/to/your/binary /path/to/your/profile
+
+The `binary` argument *must* be the binary that produced this profile.
+
+The `profile` argument *must* be the profile generated by this binary.
+
+*Warning*: Because pprof also supports an online mode where it can fetch profiles from a running application over http, the pprof tool can be invoked without the name of your binary ([[https://github.com/golang/go/issues/10863][issue 10863]]):
+
+    go tool pprof /tmp/c.pprof
+
+*Do*not*do*this*or*pprof*will*report*your*profile*is*empty.*
+
+* Using pprof (cont.)
+
+This is a sample cpu profile:
+
+        % go tool pprof $BINARY /tmp/c.p
+        Entering interactive mode (type "help" for commands)
+        (pprof) top
+        Showing top 15 nodes out of 63 (cum >= 4.85s)
+              flat  flat%   sum%        cum   cum%
+            21.89s  9.84%  9.84%    128.32s 57.71%  net.(*netFD).Read
+            17.58s  7.91% 17.75%     40.28s 18.11%  runtime.exitsyscall
+            15.79s  7.10% 24.85%     15.79s  7.10%  runtime.newdefer
+            12.96s  5.83% 30.68%    151.41s 68.09%  test_frame/connection.(*ServerConn).readBytes
+            11.27s  5.07% 35.75%     23.35s 10.50%  runtime.reentersyscall
+            10.45s  4.70% 40.45%     82.77s 37.22%  syscall.Syscall
+             9.38s  4.22% 44.67%      9.38s  4.22%  runtime.deferproc_m
+             9.17s  4.12% 48.79%     12.73s  5.72%  exitsyscallfast
+             8.03s  3.61% 52.40%     11.86s  5.33%  runtime.casgstatus
+             7.66s  3.44% 55.85%      7.66s  3.44%  runtime.cas
+             7.59s  3.41% 59.26%      7.59s  3.41%  runtime.onM
+             6.42s  2.89% 62.15%    134.74s 60.60%  net.(*conn).Read
+             6.31s  2.84% 64.98%      6.31s  2.84%  runtime.writebarrierptr
+             6.26s  2.82% 67.80%     32.09s 14.43%  runtime.entersyscall
+
+Often this output is hard to understand.
+
+* Using pprof (cont.)
+
+A better way to understand your profile is to visualise it.
+
+        % go tool pprof $BINARY /tmp/c.p
+        Entering interactive mode (type "help" for commands)
+        (pprof) web
+
+Opens a web page with a graphical display of the profile.
+
+I find this method to be superior to the text mode, I strongly recommend you try it.
+
+.link seven/profile.svg
+
+`pprof` supports a non interactive form with flags like `-svg`, `-pdf`, etc. See `go`tool`pprof`-help` for more details.
+
+.link http://blog.golang.org/profiling-go-programs Further reading: Profiling Go programs
+.link https://software.intel.com/en-us/blogs/2014/05/10/debugging-performance-issues-in-go-programs Further reading: Debugging performance issues in Go programs
+
+* Using pprof (cont.)
+
+We can visualise memory profiles in the same way.
+
+    % go build -gcflags='-memprofile=/tmp/m.p'
+    % go tool pprof --alloc_objects -svg $(go tool -n compile) /tmp/m.p > alloc_objects.svg
+    % go tool pprof --inuse_objects -svg $(go tool -n compile) /tmp/m.p > inuse_objects.svg
+
+The allocation profile reports the location of where every allocation was made.
+
+.link seven/alloc_objects.svg
+
+In use profile reports the location of an allocation that are live at the end of the profile.
+
+.link seven/inuse_objects.svg
+
+Here is a visualisation of a block profile:
+
+    % go test -run=XXX -bench=ClientServer -blockprofile=/tmp/b.p net/http
+    % go tool pprof -svg http.test /tmp/b.p > block.svg
+
+.link seven/block.svg
+
+* Intermission №2
+
+* Framepointers
+
+.image seven/good-news.jpg
+
+Go 1.7 has been released and along with a new compiler for amd64, the compiler now enables frame pointers by default.
+
+The frame pointer is a register that always points to the top of the current stack frame. 
+
+Framepointers enable tools like `gdb(1)`, and `perf(1)` to understand the Go call stack.
+
+* №5 perf
+
+* perf
+
+If you're a linux user, then `perf(1)` is a great tool for profiling applications. Now we have frame pointers, `perf` can profile Go applications.
+
+	% go build -toolexec="perf stat" cmd/compile/internal/gc
+	# cmd/compile/internal/gc
+	
+	 Performance counter stats for '/home/dfc/go/pkg/tool/linux_amd64/compile -o $WORK/cmd/compile/internal/gc.a -trimpath $WORK -p cmd/compile/internal/gc -complete -buildid 87cd803267511b4d9e753d68b5b66a70e2f878c4 -D _/home/dfc/go/src/cmd/compile/internal/gc -I $WORK -pack ./alg.go ./align.go ./bexport.go ./bimport.go ./builtin.go ./bv.go ./cgen.go ./closure.go ./const.go ./cplx.go ./dcl.go ./esc.go ./export.go ./fmt.go ./gen.go ./go.go ./gsubr.go ./init.go ./inl.go ./lex.go ./magic.go ./main.go ./mpfloat.go ./mpint.go ./obj.go ./opnames.go ./order.go ./parser.go ./pgen.go ./plive.go ./popt.go ./racewalk.go ./range.go ./reflect.go ./reg.go ./select.go ./sinit.go ./sparselocatephifunctions.go ./ssa.go ./subr.go ./swt.go ./syntax.go ./type.go ./typecheck.go ./universe.go ./unsafe.go ./util.go ./walk.go':
+	
+	       7026.140760 task-clock (msec)         #    1.283 CPUs utilized          
+	             1,665 context-switches          #    0.237 K/sec                  
+	                39 cpu-migrations            #    0.006 K/sec                  
+	            77,362 page-faults               #    0.011 M/sec                  
+	    21,769,537,949 cycles                    #    3.098 GHz                     [83.41%]
+	    11,671,235,864 stalled-cycles-frontend   #   53.61% frontend cycles idle    [83.31%]
+	     6,839,727,058 stalled-cycles-backend    #   31.42% backend  cycles idle    [66.65%]
+	    27,157,950,447 instructions              #    1.25  insns per cycle        
+	                                             #    0.43  stalled cycles per insn [83.25%]
+	     5,351,057,260 branches                  #  761.593 M/sec                   [83.49%]
+	       118,150,150 branch-misses             #    2.21% of all branches         [83.15%]
+	
+	       5.476816754 seconds time elapsed
+
+* perf record
+
+	% go build -toolexec="perf record -g -o /tmp/p" cmd/compile/internal/gc
+	% perf report -i /tmp/p
+
+.image seven/perf.png _ 600
+.link seven/perf.png 
+
+* №6 Flame graph
+
+* Flame graph
+
+.image seven/cpu-mysql-updated.svg _ 400
+
+"The x-axis shows the stack profile population, sorted alphabetically (it is not the passage of time), and the y-axis shows stack depth. Each rectangle represents a stack frame. The wider a frame is is, the more often it was present in the stacks. The top edge shows what is on-CPU, and beneath it is its ancestry. The colors are usually not significant, picked randomly to differentiate frames."
+
+- *x*axis*: alphabetical stack sort, to maximise merging.
+- *y*axis*: stack depth.
+
+.link http://www.brendangregg.com/flamegraphs.html
+
+* Flame graph interpretation (1/3)
+
+.image seven/flamegraph1.png
+
+.caption http://www.slideshare.net/brendangregg/java-performance-analysis-on-linux-with-flame-graphs
+
+* Flame graph interpretation (2/3)
+
+.image seven/flamegraph2.png
+
+.caption http://www.slideshare.net/brendangregg/java-performance-analysis-on-linux-with-flame-graphs
+
+* Flame graph interpretation (3/3)
+
+.image seven/flamegraph3.png
+
+.caption http://www.slideshare.net/brendangregg/java-performance-analysis-on-linux-with-flame-graphs
+
+* Flame graph (cont.)
+
+Flame graphs can consume data from many sources, including `pprof` (and `perf(1)`).
+
+Uber have open sourced a tool call go-torch which automates the process, assuming you have the `/debug/pprof` endpoint, or you can feed it an existing profile.
+
+.link https://github.com/uber/go-torch
+
+DEMO
+
+	% go build -gcflags=-cpuprofile=/tmp/c.p .
+	% go-torch $(go tool compile -n) /tmp/c.p
+	INFO[16:00:09] Run pprof command: go tool pprof -raw -seconds 30 /Users/dfc/go/pkg/tool/darwin_amd64/compile /tmp/c.p
+	INFO[16:00:09] Writing svg to torch.svg
+
+.link seven/torch.svg
+
+* №7 go tool trace
+
+* go tool trace
+
+In Go 1.5, Dmitry Vyukov added a new kind of profiling to the runtime; [[https://golang.org/doc/go1.5#trace_command][execution trace profiling]].
+
+Gives insight into dynamic execution of a program.
+
+Captures with nanosecond precision:
+
+- goroutine creation/start/end
+- goroutine blocking/unblocking
+- network blocking
+- system calls
+- GC events
+
+Execution traces are essentially undocumented ☹️, see [[https://github.com/golang/go/issues/16526][github/go#16526]]
+
+* go tool trace (cont.)
+
+Generating a profile (with [[https://go-review.googlesource.com/#/c/25354/][CL 25354]] applied):
+
+	% go build -gcflags=-traceprofile=/tmp/t.p cmd/compile/internal/gc
+
+Viewing the trace:
+
+	% go tool trace /tmp/t.p
+	2016/08/13 17:01:04 Parsing trace...
+	2016/08/13 17:01:04 Serializing trace...
+	2016/08/13 17:01:05 Splitting trace...
+	2016/08/13 17:01:06 Opening browser
+
+DEMO:
+
+	go tool trace seven/t.p
+
+Bonus: [[https://github.com/pkg/profile/releases/tag/v1.2.0][`github.com/pkg/profile`]] supports generating trace profiles.
+
+	defer profile.Start(profile.TraceProfile).Stop()
+
+* Conclusion
+
+.image seven/wharrgarbl.jpg
+
+That's a lot to consume in 30 minutes.
+
+Different tools give you a different perspective on the performance of your application.
+
+Maybe you don't need to know always use every one of these tools, but a working knowledge of most will serve you well.
+
+.link http://go-talks.appspot.com/github.com/davecheney/presentations/seven.slide#1

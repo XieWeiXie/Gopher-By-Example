@@ -1,0 +1,54 @@
+写给大家看的 SLIDE 教程
+如何制作 SLIDE
+30 Nov 2018
+
+XieWei
+
+1156143589@qq.com
+
+https://www.zhihu.com/people/wu-xiao-shen-16/activities
+
+WeChat: wuxiao_shen
+
+* Chapter One
+* IDE
+How to choose IDE?
+
+    Golang
+    vscode
+    LiteIDE
+
+* Chapter Two
+* Format
+
+    _NOTE_
+    `time`
+    * Chapter One
+    20 lines
+
+
+_NOTE_
+
+- First
+- Second
+- Third
+- Fourth
+
+
+`time`
+.link ../test/test.slide
+
+We can learn from this passage.
+
+* Chapter Three
+* END
+
+*hello*world*
+
+.caption http://www.baidu.com
+
+
+.image ../test/sc.jpg
+
+GoodBye!
+

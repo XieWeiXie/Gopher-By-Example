@@ -75,7 +75,7 @@ https://www.zhihu.com/people/wu-xiao-shen-16/activities
 
 当然如果喜欢听民谣，我推荐这首能听哭你的歌曲：`.iframe`
 
-.iframe //music.163.com/outchain/player?type=2&id=1306431916&auto=1&height=66
+.iframe https://music.163.com/outchain/player?type=2&id=1306431916&auto=1&height=66
 
 又或是你喜欢看些指弹吉他，我推荐这个视频：
 
@@ -107,10 +107,18 @@ https://www.zhihu.com/people/wu-xiao-shen-16/activities
 如何把演示文档可以本地访问呢？
 
 1. 演示文档上传代码托管网站：比如 Github、Bitbucket 等
-2. 托管网站加上前缀：
+2. 加上前缀：
 
     http://talks.golang.org
     http://go-talks.appspot.com
+
+* 演示
+
 3. 就可以在线访问了
 
-    比如
+    比如: 原网址 https://github.com/wuxiaoxiaoshen/Gopher-By-Example/talks/slide/learn.slide
+    在线访问网址：http://go-talks.appspot.com/github.com/wuxiaoxiaoshen/Gopher-By-Example/blob/master/talks/slide/learn.slide
+
+.link https://github.com/wuxiaoxiaoshen/Gopher-By-Example/blob/master/talks/slide/2018-12-02.slide
+
+.link http://go-talks.appspot.com/github.com/wuxiaoxiaoshen/Gopher-By-Example/talks/slide/2018-12-02.slide

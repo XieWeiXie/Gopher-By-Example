@@ -1,0 +1,116 @@
+写给程序员看的演示教程
+Slide 分享演示
+2 Dec 2018
+
+XieWei
+1156143589@qq.com
+https://www.zhihu.com/people/wu-xiao-shen-16/activities
+
+* 第一节
+* 下载安装配置库
+
+- 库的安装
+
+    go get -u golang.org/x/tools/cmd/present
+
+- 目录下执行命令
+
+    present
+- 访问本地地址
+
+    http://127.0.0.1:3999
+
+- 代码块
+
+    package main
+
+    import "fmt"
+
+    func main(){
+        fmt.Println("hello world")
+    }
+
+* 第二节
+* 语法
+
+语法主要包括：
+
+- 标题级别 `*`
+- 正文
+- 代码块 `tab`
+- 加粗字体 `*加粗*`
+- 斜体 `_斜体_`
+- 外部链接：`.link`
+
+
+* 第三节
+* 演示
+
+`Go`  是一门 *优雅* 的编程语言，不同于其他的编程语言，比如：`Python、Java、C++` 等， `Go` 天然的支持并发，同时其语法非常的优雅。
+
+一个最简单的 `Go` 程序如下：
+
+    package main
+
+    import "fmt"
+
+    func main(){
+        fmt.Println("Hello world Go")
+    }
+
+其官方网站为: `.link`
+
+.link https://golang.org/
+
+对初学者最友好的教程为：`.link`
+
+.link https://tour.golang.org
+
+* 第三节
+* 演示
+
+如果你不介意，我还推荐这个教程：`.link`
+
+.link http://space.bilibili.com/10056291/channel/detail?cid=53850
+
+当然如果喜欢听民谣，我推荐这首能听哭你的歌曲：`.iframe`
+
+.iframe //music.163.com/outchain/player?type=2&id=1306431916&auto=1&height=66
+
+又或是你喜欢看些指弹吉他，我推荐这个视频：
+
+.link https://www.bilibili.com/video/av34230485?from=search&seid=4277834771490011676
+
+* 演示
+当然还可以直接导入  `go` 程序，而不使用代码块：`.play main.go`
+
+.play main.go
+
+也可以导入图片： `.image`
+
+.image GO_BUILD.png 300 300
+
+* 演示
+
+那么这玩意有没有什么缺点啊？
+
+有的。
+就是一页不能放很多内容，不然显示不下，你需要时刻注意自己写的内容是不是超过了一页，注意分页。
+
+假如我不想让人看见某些信息，怎么使其成为演示者模式啊？ `:`
+
+: 这就是演示者模式
+
+    : 这是演示者模式
+
+
+如何把演示文档可以本地访问呢？
+
+1. 演示文档上传代码托管网站：比如 Github、Bitbucket 等
+2. 托管网站加上前缀：
+
+    http://talks.golang.org
+    http://go-talks.appspot.com
+3. 就可以在线访问了
+
+    比如

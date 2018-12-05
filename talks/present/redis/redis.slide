@@ -1,0 +1,103 @@
+Redis 极简入门教程
+如何熟悉一门数据库
+4 Dec 2018
+
+XieWei
+1156143589@qq.com
+https://www.zhihu.com/people/wu-xiao-shen-16/activities
+
+
+* 1: 是什么
+* 1: 是什么
+
+Redis是一个开源的使用ANSI C语言编写、遵守BSD协议、支持网络、可基于内存亦可持久化的日志型、Key-Value数据库，并提供多种语言的API
+
+C/S 架构
+
+
+
+- 字符串
+- 列表
+- 哈希
+- 集合
+- 有序集合
+
+
+* 2: 下载安装
+
+.link https://redis.io/download
+
+.link http://try.redis.io/
+
+- 启动：服务端
+- 客户端访问
+- 命令
+
+* 3: 如何使用
+* 3: 如何使用
+
+字符串
+
+字符串、整型、浮点型
+
+- 拼接、 长度、增加、减少、索引
+
+.link http://naotu.baidu.com/file/2b8b9c5b5cc70de9eca9a6173ce9f5f1
+
+.play string/main.go
+
+* 3: 如何使用
+列表
+
+- 增加元素、删除元素、访问
+
+.link http://naotu.baidu.com/file/7eff542285fa186069cafff153cbfa77
+
+.play list/main.go
+
+* 3: 如何使用
+哈希
+
+- key、val
+
+.link http://naotu.baidu.com/file/2dc36aa1cba03b16fce5eb09b0541603
+
+.play map/main.go
+
+* 3: 如何使用
+集合
+
+- 单个集合
+- 多个集合
+
+.link http://naotu.baidu.com/file/6afdeba965cdbee60060e5ef46f201bb
+
+* 3: 如何使用
+有序集合
+
+- 有序
+- 分值
+
+.link http://naotu.baidu.com/file/d67da3bd27b0cae1a5e23718c5088727
+
+
+* 3: 如何使用
+事务
+
+    MULTI
+    ...
+    EXEC
+    DISCARD
+
+* 3: 如何使用
+发布订阅
+
+    SUBSCRIBE
+    PUBLISH
+
+
+
+* 4: 总结
+
+- 基本数据类型
+- 文档

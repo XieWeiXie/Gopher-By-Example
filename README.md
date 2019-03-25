@@ -37,7 +37,7 @@ Go 编程语言学习。
 19. [Go 实现世界杯后台管理系统](MarkDown/01-18.md)
 20. [Gorm 上手指南](MarkDown/01-19.mds)
 21. [Golang 爬虫上手指南](MarkDown/01-20.md)
-
+22. [适用于Go项目的Makefile指南](02-02-Makefile/README.md)
 ---
 
 ### 第二季

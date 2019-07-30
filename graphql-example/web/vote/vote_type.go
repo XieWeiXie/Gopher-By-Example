@@ -74,7 +74,7 @@ var Vote = graphql.NewObject(graphql.ObjectConfig{
 			},
 		},
 		"options": &graphql.Field{
-			Type: Options,
+			Type: graphql.NewList(Options),
 			Resolve: func(p graphql.ResolveParams) (i interface{}, e error) {
 				if vote, ok := p.Source.(model.VoteSerializer); ok {
 					return vote.Options, nil
@@ -82,12 +82,29 @@ var Vote = graphql.NewObject(graphql.ObjectConfig{
 				return nil, fmt.Errorf("field not found")
 			},
 		},
+		"deadline": &graphql.Field{
+			Type: graphql.DateTime,
+			Resolve: func(p graphql.ResolveParams) (i interface{}, e error) {
+				if vote, ok := p.Source.(model.VoteSerializer); ok {
+					return vote.Deadline, nil
+				}
+				return nil, fmt.Errorf("field not found")
+			},
+		},
 	},
 })
 
-var OptionInput = graphql.NewInputObject(graphql.InputObjectConfig{})
+var OptionInput = graphql.NewInputObject(graphql.InputObjectConfig{
+	Name: "optionInput",
+	Fields: graphql.InputObjectConfigFieldMap{
+		"name": &graphql.InputObjectFieldConfig{
+			Type: graphql.String,
+		},
+	},
+})
 
 var Class = graphql.NewEnum(graphql.EnumConfig{
+	Name: "classVote",
 	Values: graphql.EnumValueConfigMap{
 		"SINGLE": &graphql.EnumValueConfig{
 			Value:       model.SINGLE,
@@ -103,9 +120,41 @@ var Class = graphql.NewEnum(graphql.EnumConfig{
 var Options = graphql.NewObject(graphql.ObjectConfig{
 	Name: "options",
 	Fields: graphql.Fields{
-		"id":        &graphql.Field{},
-		"createdAt": &graphql.Field{},
-		"updatedAt": &graphql.Field{},
-		"name":      &graphql.Field{},
+		"id": &graphql.Field{
+			Type: graphql.ID,
+			Resolve: func(p graphql.ResolveParams) (i interface{}, e error) {
+				if option, ok := p.Source.(model.OptionSerializer); ok {
+					return option.Id, nil
+				}
+				return nil, fmt.Errorf("field not found")
+			},
+		},
+		"createdAt": &graphql.Field{
+			Type: graphql.DateTime,
+			Resolve: func(p graphql.ResolveParams) (i interface{}, e error) {
+				if option, ok := p.Source.(model.OptionSerializer); ok {
+					return option.CreatedAt, nil
+				}
+				return nil, fmt.Errorf("field not found")
+			},
+		},
+		"updatedAt": &graphql.Field{
+			Type: graphql.DateTime,
+			Resolve: func(p graphql.ResolveParams) (i interface{}, e error) {
+				if option, ok := p.Source.(model.OptionSerializer); ok {
+					return option.UpdatedAt, nil
+				}
+				return nil, fmt.Errorf("field not found")
+			},
+		},
+		"name": &graphql.Field{
+			Type: graphql.String,
+			Resolve: func(p graphql.ResolveParams) (i interface{}, e error) {
+				if option, ok := p.Source.(model.OptionSerializer); ok {
+					return option.Name, nil
+				}
+				return nil, fmt.Errorf("field not found")
+			},
+		},
 	},
 })

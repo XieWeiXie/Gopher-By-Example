@@ -1,9 +1,18 @@
 type Query {
+    ping: Ping
+    pinWithData(data: String): Ping
     vote(id:ID!): Vote
 }
 
 type Mutation {
     createVote(title:String!, options:[optionsInput],deadline:Time, description:String, class:VoteClass!): Vote
+    updateVote(title:String!, description:String!): Vote
+}
+
+type Ping {
+    data: String
+    code: Int
+
 }
 
 type Vote {

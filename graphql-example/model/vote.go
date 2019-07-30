@@ -53,9 +53,18 @@ func (V Vote) TableName() string {
 func (V Vote) Serializer() VoteSerializer {
 	var optionSerializer []OptionSerializer
 	var options []Option
-	database.Engine.Where("id in (?)", V.OptionIds).Find(&options)
+	database.Engine.In("id", V.OptionIds).Find(&options)
 	for _, i := range options {
 		optionSerializer = append(optionSerializer, i.Serializer())
+	}
+	classString := func(value int) string {
+		if V.Class == SINGLE {
+			return "单选"
+		}
+		if V.Class == MULTIPLE {
+			return "多选"
+		}
+		return ""
 	}
 	return VoteSerializer{
 		Id:          V.Id,
@@ -66,7 +75,7 @@ func (V Vote) Serializer() VoteSerializer {
 		Options:     optionSerializer,
 		Deadline:    V.Deadline,
 		Class:       V.Class,
-		ClassString: ClassMap[V.Class],
+		ClassString: classString(V.Class),
 	}
 }
 

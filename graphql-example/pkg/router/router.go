@@ -3,6 +3,7 @@ package router
 import (
 	"Gopher-By-Example/graphql-example/web/mutation"
 	"Gopher-By-Example/graphql-example/web/query"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -17,7 +18,7 @@ func RegisterSchema() *graphql.Schema {
 			Mutation: mutation.Mutation,
 		})
 	if err != nil {
-		panic("schema init fail")
+		panic(fmt.Sprintf("schema init fail %s", err.Error()))
 	}
 	return &schema
 

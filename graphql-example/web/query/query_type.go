@@ -11,16 +11,21 @@ import (
 var Query = graphql.NewObject(graphql.ObjectConfig{
 	Name: "Query",
 	Fields: graphql.Fields{
-		"ping": &graphql.Field{},
+		"ping": &graphql.Field{
+			Type: ping.Ping,
+			Resolve: func(p graphql.ResolveParams) (i interface{}, e error) {
+				return ping.Default, nil
+			},
+		},
 	},
 })
 
 func init() {
-	Query.AddFieldConfig("ping", &graphql.Field{
+	Query.AddFieldConfig("pingWithData", &graphql.Field{
 		Type: ping.Ping,
 		Args: graphql.FieldConfigArgument{
 			"data": &graphql.ArgumentConfig{
-				Type: graphql.NewNonNull(graphql.ID),
+				Type: graphql.NewNonNull(graphql.String),
 			},
 		},
 		Resolve: func(p graphql.ResolveParams) (i interface{}, e error) {

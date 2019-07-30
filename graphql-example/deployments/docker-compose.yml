@@ -1,0 +1,16 @@
+version: "3"
+
+services:
+  mysql:
+    image: mysql:latest
+    container_name: localMySQL
+    volumes:
+      - $PWD/mysql-data:/var/lib/mysql
+    expose:
+      - 3306
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=admin123
+      - MYSQL_DATABASE=vote_example
+      - MYSQL_USER=root

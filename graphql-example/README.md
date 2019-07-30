@@ -1,27 +1,26 @@
 # GraphQL-example
 
 
-
-
-
-
-
 ## 使用步骤
 
 **前提**
 
 - Go 1.11 以上
 - Docker
+- Docker-compose
+
+> export GO111MODULE=on
+> export GOPROXY=https://mirrors.aliyun.com/goproxy/ 
 
 **下载安装依赖**
 ``` 
 cd ${PROJECT} && go mod download
 ```
 
-**创建数据库**
+**启动容器，创建数据库**
 
 ``` 
-cd ${PROJECT} && bash db.sh
+cd ${PROJECT}/deployments && docker-compose up -d
 ```
 
 **迁移数据库表**

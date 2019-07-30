@@ -1,0 +1,33 @@
+type Query {
+    vote(id:ID!): Vote
+}
+
+type Mutation {
+    createVote(title:String!, options:[optionsInput],deadline:Time, description:String, class:VoteClass!): Vote
+}
+
+type Vote {
+    id: ID!
+    createdAt: Time
+    updatedAt: Time
+    deletedAt: Time
+    title: String
+    description: String
+    options: [Options!]!
+    deadline: Time
+    class: VoteClass
+}
+
+type Options {
+    name: String
+}
+
+input optionsInput {
+    name:String!
+}
+enum VoteClass {
+    SINGLE
+    MULTIPLE
+}
+
+scalar Time

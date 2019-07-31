@@ -1,6 +1,7 @@
 package router
 
 import (
+	"Gopher-By-Example/graphql-example/pkg/middleware"
 	"Gopher-By-Example/graphql-example/web/mutation"
 	"Gopher-By-Example/graphql-example/web/query"
 	"fmt"
@@ -33,6 +34,7 @@ func Register() *handler.Handler {
 }
 func StartWebServer() {
 	log.Println("Start Web Server...")
-	http.Handle("/graphql", Register())
+	http.HandleFunc("/graphql", middleware.LoggerMiddleWare(nil, Register()))
+	http.HandleFunc("/graphql_auth", middleware.Auth(nil, Register()))
 	log.Fatal(http.ListenAndServe(":7878", nil))
 }
